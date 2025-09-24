@@ -77,5 +77,11 @@ def handle_hello_message(message):
 def outbound_count(message):
     count = get_outbound_count()
     bot.send_message(message.chat.id, f"Total outbound messages: {count}")
+    
+@bot.message_handler(commands=['test'])
+def test_send(message):
+    # This function tests for TCI sending
+    
+    bot.send_message(message.chat.id, "This is a test command! ✅")
 
 bot.infinity_polling(timeout=60, long_polling_timeout=30)
