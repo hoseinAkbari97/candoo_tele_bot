@@ -1,0 +1,81 @@
+import os
+import telebot
+from dotenv import load_dotenv
+import pprint
+import json
+import mysql.connector
+from db_queries import get_outbound_count
+
+
+load_dotenv()
+
+# --- Database connection info from .env ---
+archive_conn_info = {
+    "host": os.getenv("ARCHIVE_HOST"),
+    "user": os.getenv("ARCHIVE_USER"),
+    "password": os.getenv("ARCHIVE_PASSWORD"),
+    "database": os.getenv("ARCHIVE_DB")
+}
+
+# master_conn_info = {
+#     "host": os.getenv("MASTER_HOST"),
+#     "user": os.getenv("MASTER_USER"),
+#     "password": os.getenv("MASTER_PASSWORD"),
+#     "database": os.getenv("MASTER_DB")
+# }
+
+master_conn_info = {
+    "host": "192.168.248.12",
+    "user": "root",
+    "password": "DenZel00@",
+    "database": "_smsengine"
+}
+
+API_TOKEN = os.environ.get("API_TOKEN")
+if API_TOKEN is None:
+    raise ValueError("API_TOKEN is not set in environment variables")
+
+bot = telebot.TeleBot(API_TOKEN)
+
+# Handle '/start' and '/help'
+@bot.message_handler(commands=['help', 'start'])
+def send_welcome(message):
+#     bot.reply_to(message, """\
+# Hi there, I am EchoBot.
+# I am here to echo your kind words back to you. Just say anything nice and I'll say the exact same thing to you!\
+# """)
+#     pprint.pprint(message.chat.__dict__, width=4)
+    bot.send_message(
+        message.chat.id,
+        json.dumps(message.chat.__dict__, indent=4, ensure_ascii=False))
+    
+# Handles all sent documents and audio files
+@bot.message_handler(content_types=['document', 'audio'])
+def handle_docs_audio(message):
+    if message.content_type == "document":
+        print("It's a document")
+    elif message.content_type == "audio":
+        print("It's an audio")
+
+# Handles all text messages that match the regular expression
+@bot.message_handler(regexp="ali")
+def handle_message(message):
+	print("hi")
+     
+def check_hello(message):
+    return message.text == "hello"
+
+@bot.message_handler(func=check_hello)
+def handle_hello_message(message):
+    print("Triggered")
+    
+# @bot.message_handler(func=lambda message: True)
+# def handle_edited_message(message):
+#     print("edited message is received")
+
+@bot.message_handler(commands=['outbound'])
+def outbound_count(message):
+    count = get_outbound_count()
+    bot.send_message(message.chat.id, f"Total outbound messages: {count}")
+
+bot.infinity_polling(timeout=60, long_polling_timeout=30)
