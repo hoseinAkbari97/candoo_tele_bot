@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import pprint
 import json
 import mysql.connector
-from db_queries import get_outbound_count
+from db_queries import get_outbound_count, send_test_message
 
 
 load_dotenv()
@@ -81,7 +81,7 @@ def outbound_count(message):
 @bot.message_handler(commands=['test'])
 def test_send(message):
     # This function tests for TCI sending
-    
+    send_test_message()
     bot.send_message(message.chat.id, "This is a test command! ✅")
 
 bot.infinity_polling(timeout=60, long_polling_timeout=30)

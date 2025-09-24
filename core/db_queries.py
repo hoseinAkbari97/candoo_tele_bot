@@ -1,5 +1,9 @@
 import mysql.connector
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
+# from dotenv import load_dotenv
+# import os
+
+# load_dotenv()
 
 master_conn_info = {
     "host": "192.168.248.12",
@@ -7,6 +11,20 @@ master_conn_info = {
     "password": "DenZel00@",
     "database": "_smsengine"
 }
+
+sdp_tci_conn_info = {
+    "host": "172.22.172.116",
+    "user": "sdpuser",
+    "password": "dO#dJn#240@",
+    "database": "smsserver_p2"
+}
+
+# master_conn_info = {
+#     "host": os.getenv("MASTER_HOST"),
+#     "user": os.getenv("MASTER_USER"),
+#     "password": os.getenv("MASTER_PASSWORD"),
+#     "database": os.getenv("MASTER_DB")
+# }
 
 def get_outbound_count():
     try:
@@ -25,7 +43,7 @@ def get_outbound_count():
             
 def send_test_message():
     try:
-        conn = mysql.connector.connect(**master_conn_info)
+        conn = mysql.connector.connect(**sdp_tci_conn_info)
         cursor = conn.cursor()
         
         # Execute the INSERT query
